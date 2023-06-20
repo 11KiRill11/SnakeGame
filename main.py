@@ -76,3 +76,13 @@ class Snake:
             self.direction = left
         elif keys[pygame.K_RIGHT] or keys[ord('d')]:
             self.direction = right
+
+class Authentication:
+    def __init__(self):
+        self.users = {"player": "123"}
+
+    def login(self, username, password):
+        if username in self.users and self.users[username] == password:
+            print("Авторизация успешна.")
+            return True
+        return False
