@@ -152,3 +152,7 @@ class Game:
         score_surface = self.font.render(f"Score: {self.score}", True, white)
         self.window.blit(score_surface, (10, 10))
 
+game = Game()
+game.set_difficulty('medium')
+game.play()
+
