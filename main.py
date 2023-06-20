@@ -99,3 +99,56 @@ class Apple:
 
     def draw(self, surface):
         pygame.draw.rect(surface, self.color, pygame.Rect(self.position[0], self.position[1], gridsize, gridsize))
+
+class Game:
+    def __init__(self):
+        self.window = pygame.display.set_mode((window_width, window_height))
+        self.clock = pygame.time.Clock()
+        self.score = 0
+        self.font = pygame.font.Font(None, 36)
+        self.snake = Snake()
+        self.apple = Apple()
+        self.auth = Authentication()  # Инициализация класса авторизации
+        self.difficulty = 'medium'  # Уровень сложности по умолчанию
+
+    def set_difficulty(self, difficulty):
+        self.difficulty = difficulty
+        self.snake.speed = speeds[difficulty]
+
+    def play(self):
+        running = True
+        authenticated = False  # Флаг авторизации
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+
+            if not authenticated:
+                username = input("Введите имя пользователя: ")
+                password = input("Введите пароль: ")
+                authenticated = self.auth.login(username, password)  # Попытка входа
+                if not authenticated:
+                    print("Ошибка авторизации. Попробуйте снова.")
+                    continue
+
+            self.snake.handle_keys(pygame.key.get_pressed())
+            self.snake.move()
+
+            if self.snake.get_head_position() == self.apple.position:
+                self.snake.length += 1
+                self.score += 1
+                self.apple.randomize_position()
+
+            self.window.fill(black)
+            self.snake.draw(self.window)
+            self.apple.draw(self.window)
+            self.draw_score()
+            pygame.display.update()
+            self.clock.tick(self.snake.speed)
+
+        pygame.quit()
+
+    def draw_score(self):
+        score_surface = self.font.render(f"Score: {self.score}", True, white)
+        self.window.blit(score_surface, (10, 10))
+
